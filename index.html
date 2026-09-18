@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Tic Tac Toe Game (User vs AI) with Bun and TypeScript" />
+  <title>Tic Tac Toe | User vs AI</title>
+  <link rel="stylesheet" href="/public/styles.css" />
+</head>
+<body>
+  <header class="app-header" role="banner">
+    <div class="header-title-wrap">
+      <h1 class="app-title">TIC-TAC-TOE</h1>
+      <span class="mode-badge">Mode: Human (X) vs AI (O)</span>
+      <span class="env-badge">Bun &amp; TypeScript</span>
+    </div>
+  </header>
+
+  <main class="main-container" id="main-content" role="main">
+    <section class="game-area" aria-label="Game Arena">
+      <div class="scoreboard" role="region" aria-label="Scoreboard">
+        <div class="score-card player-x" id="score-card-human">
+          <div class="score-label">Player (X)</div>
+          <div class="score-value" id="score-human" aria-live="polite">0</div>
+        </div>
+        <div class="score-card draws" id="score-card-draws">
+          <div class="score-label">Draws</div>
+          <div class="score-value" id="score-draws" aria-live="polite">0</div>
+        </div>
+        <div class="score-card player-o" id="score-card-ai">
+          <div class="score-label">AI Model (O)</div>
+          <div class="score-value" id="score-ai" aria-live="polite">0</div>
+        </div>
+      </div>
+
+      <div class="turn-banner" role="status" aria-live="polite" id="turn-banner">
+        <div class="turn-text" id="status-message">
+          <span class="turn-indicator-dot dot-x" id="status-dot"></span>
+          <span id="status-text">Your turn! Click an empty box to place 'X'.</span>
+        </div>
+      </div>
+
+      <div class="alert-box hidden" id="alert-box" role="alert" aria-live="assertive">
+        <span class="alert-icon" id="alert-icon" aria-hidden="true">&#9888;</span>
+        <div class="alert-content">
+          <div class="alert-title" id="alert-title">Notice</div>
+          <div id="alert-message">Alert description goes here.</div>
+        </div>
+      </div>
+
+      <div class="game-board-wrapper">
+        <div
+          class="grid-board"
+          id="board-grid"
+          role="grid"
+          aria-label="3 by 3 Tic Tac Toe Grid"
+        ></div>
+      </div>
+    </section>
+
+    <aside class="side-panel" aria-label="Game Details and Settings">
+      <div class="panel-card" id="ai-panel">
+        <div class="panel-title">
+          <span>TypeSafe AI Classifier</span>
+          <span class="panel-badge" id="ai-mode-tag">Jev System One</span>
+        </div>
+        <p class="code-info">
+          Powered by TypeSafe AI's <strong>Jev decision model</strong>. Classifies candidate moves and predicts the optimal step using calibrated probabilities and confidence scoring.
+        </p>
+
+        <!-- API Key Configuration Section -->
+        <div class="api-key-container">
+          <div class="api-key-header">
+            <label for="typesafe-api-key-input" class="api-key-label">API Key Configuration</label>
+            <span class="api-key-status badge-neutral" id="api-key-status">Checking...</span>
+          </div>
+          <div class="api-key-input-row">
+            <input
+              type="password"
+              id="typesafe-api-key-input"
+              class="api-key-input"
+              placeholder="Enter TYPESAFE_API_KEY (or set in .env)"
+              autocomplete="off"
+            />
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-save-api-key" title="Save API key in browser">Save</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-toggle-api-key" title="Toggle visibility" aria-label="Toggle API key visibility">&#128065;</button>
+          </div>
+          <p class="api-key-hint" id="api-key-hint">
+            Jev API calls require a <code>TYPESAFE_API_KEY</code>. Enter one here or set it as an environment variable on the server.
+          </p>
+        </div>
+
+        <!-- Decision Inspector Card -->
+        <div class="decision-inspector-card" id="decision-inspector">
+          <div class="inspector-header">
+            <span class="inspector-title">Decision Inspector</span>
+            <span class="inspector-engine-badge badge-neutral" id="inspector-engine-badge">Awaiting First Move</span>
+          </div>
+          <div class="inspector-grid">
+            <div class="inspector-stat">
+              <span class="stat-label">Predicted Step</span>
+              <span class="stat-value" id="stat-predicted-step">-</span>
+            </div>
+            <div class="inspector-stat">
+              <span class="stat-label">Confidence</span>
+              <span class="stat-value" id="stat-confidence">-</span>
+            </div>
+            <div class="inspector-stat">
+              <span class="stat-label">Assessment</span>
+              <span class="stat-value" id="stat-assessment">-</span>
+            </div>
+          </div>
+          <div class="probabilities-section">
+            <div class="probabilities-title">Candidate Step Probabilities:</div>
+            <div class="probabilities-list" id="probabilities-list">
+              <span class="text-muted" style="font-size: 0.75rem;">Probabilities appear when AI makes a move.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button
+            type="button"
+            class="btn btn-accent"
+            id="btn-fallback-ai"
+            title="Execute a fallback random move"
+          >
+            &#9881; Play Fallback Random Move
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>Remaining Available Boxes</span>
+          <span class="panel-badge" id="remaining-count-badge">9 / 9</span>
+        </div>
+        <p class="code-info">Unoccupied boxes passed into <code>computeAIMove(availableBoxes)</code>:</p>
+        <div class="remaining-boxes-grid" id="remaining-boxes-list" aria-live="polite"></div>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-title">
+          <span>Move History</span>
+          <span class="panel-badge" id="move-count-badge">0 moves</span>
+        </div>
+        <ul class="history-list" id="history-log" aria-live="polite">
+          <li class="history-item">
+            <span style="color: var(--text-muted);">No moves played yet.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="panel-card">
+        <div class="panel-title">Game Controls</div>
+        <div class="button-row">
+          <button type="button" class="btn btn-primary" id="btn-next-round">
+            Next Round
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-reset-all">
+            Reset All
+          </button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="app-footer" role="contentinfo">
+    <p>Tic Tac Toe &bull; Built with HTML, CSS, TS, and Bun</p>
+  </footer>
+
+  <script type="module" src="/bundle.js"></script>
+</body>
+</html>

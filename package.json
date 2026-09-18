@@ -1,0 +1,19 @@
+{
+  "name": "jev-game-tic-tac-toe",
+  "version": "1.0.0",
+  "description": "Tic Tac Toe (User vs AI) built with HTML, CSS, TypeScript and Bun",
+  "main": "src/main.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run server.ts",
+    "build": "bun build src/main.ts --target=browser --outfile=dist/bundle.js --minify",
+    "test": "bun test",
+    "start": "bun run server.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "^0.6.0"
+  }
+}

@@ -1,0 +1,77 @@
+# Tic-Tac-Toe (User vs AI) - Bun & TypeScript
+
+A Tic-Tac-Toe web game built with HTML, CSS, TypeScript, and Bun. The default AI uses TypeSafe's Jev model via a Bun API route; you can also plug in local move logic or use the built-in random fallback.
+
+## Commands
+
+- `bun run dev` - Start dev server at `http://localhost:3000`
+- `bun test` - Run test suite
+- `bun run build` - Build production bundle to `dist/bundle.js`
+
+## Cube Positions
+
+Standard 3x3 positioning:
+
+| Index | Matrix | Notation | Label |
+| :---: | :---: | :---: | :--- |
+| **`#0`** | `[0, 0]` | **A1** | Top-Left |
+| **`#1`** | `[0, 1]` | **A2** | Top-Center |
+| **`#2`** | `[0, 2]` | **A3** | Top-Right |
+| **`#3`** | `[1, 0]` | **B1** | Middle-Left |
+| **`#4`** | `[1, 1]` | **B2** | Center |
+| **`#5`** | `[1, 2]` | **B3** | Middle-Right |
+| **`#6`** | `[2, 0]` | **C1** | Bottom-Left |
+| **`#7`** | `[2, 1]` | **C2** | Bottom-Center |
+| **`#8`** | `[2, 2]` | **C3** | Bottom-Right |
+
+## AI Function
+
+The game engine calls an `AIFunction` with a single `AIMoveContext` argument:
+
+```typescript
+export interface AIMoveContext {
+  readonly availableBoxes: readonly CellPosition[];
+  readonly board: BoardState;
+  readonly aiSymbol: PlayerSymbol;
+  readonly humanSymbol: PlayerSymbol;
+}
+```
+
+The default implementation in [`src/ai.ts`](src/ai.ts) is async and proxies to the Bun server, which runs TypeSafe AI in [`src/typesafe-decision.ts`](src/typesafe-decision.ts):
+
+```typescript
+export async function computeAIMove(
+  availableBoxes: readonly CellPosition[],
+  board: BoardState,
+  aiSymbol: PlayerSymbol = 'O',
+  humanSymbol: PlayerSymbol = 'X'
+): Promise<CellPosition | number | null | undefined | AIMoveResponse> {
+  // Returns undefined when no move is available or the API cannot respond.
+  return undefined;
+}
+```
+
+You can return any of these from a custom `AIFunction`:
+
+- `CellPosition`
+- numeric index (`0`–`8`)
+- `null` / `undefined` for an empty stub
+- `{ move, decision? }` when you also want the Decision Inspector populated
+
+Set `TYPESAFE_API_KEY` in the environment or paste a key in the UI to enable Jev. Use **Play Fallback Random Move** to test without an API key.
+
+## Validation & Error Handling
+
+- **No Override**: Occupied boxes cannot be overwritten (`CELL_ALREADY_OCCUPIED`).
+- **Turn Guard**: Moves only allowed on player's turn.
+- **Empty AI Stub**: `undefined`/`null` AI output is handled safely without crashing.
+- **Exception Protection**: Errors inside custom AI logic are caught and reported safely.
+
+## Project Layout
+
+- `src/game.ts` - game rules and turn flow
+- `src/ai.ts` - default TypeSafe client wrapper and random fallback
+- `src/typesafe-decision.ts` - Jev payload builder and server-side evaluator
+- `server/api.ts` - `/api/status` and `/api/ai-move`
+- `server/bundle.ts` - cached browser bundle for `/bundle.js`
+- `server/static.ts` - HTML/CSS/static assets

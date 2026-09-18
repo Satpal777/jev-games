@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Agent tool caches (local copies, not app source)
+.agents/
+.aider-desk/
+.claude/
+skills-lock.json
+
+# Test / coverage artifacts
+coverage/
+.nyc_output/
+
+# Bun
+.bun/
