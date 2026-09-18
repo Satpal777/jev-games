@@ -8,6 +8,17 @@ A Tic-Tac-Toe web game built with HTML, CSS, TypeScript, and Bun. The default AI
 - `bun test` - Run test suite
 - `bun run build` - Build production bundle to `dist/bundle.js`
 
+## Deploy on Vercel
+
+1. Push this repo to GitHub (already connected to Vercel).
+2. In the Vercel project → **Settings** → **Environment Variables**, add:
+   - `TYPESAFE_API_KEY` = your TypeSafe API key
+3. **Deploy** (or push to `main` to trigger auto-deploy).
+
+Vercel runs `bun install` + `bun run build`, serves `index.html` / `public/`, maps `/bundle.js` → `dist/bundle.js`, and runs `/api/status` + `/api/ai-move` as serverless functions.
+
+Local dev still uses `bun run dev` (`server.ts`). Production on Vercel does **not** use `server.ts`.
+
 ## Cube Positions
 
 Standard 3x3 positioning:
