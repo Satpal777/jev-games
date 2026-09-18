@@ -1,5 +1,5 @@
 import { WINNING_PATTERNS, type WinningPattern } from './constants';
-import type { BoardState, PlayerSymbol, WinningLine } from './types';
+import type { BoardState, CellPosition, PlayerSymbol, WinningLine } from './types';
 
 export function findWinningLine(
   board: BoardState,
@@ -39,6 +39,38 @@ export function wouldWinAt(
     ) {
       return pattern;
     }
+  }
+
+  return undefined;
+}
+
+/** Cells where placing `symbol` completes three in a row. */
+export function findImmediateWinMoves(
+  board: BoardState,
+  symbol: PlayerSymbol,
+  availableBoxes: readonly CellPosition[]
+): CellPosition[] {
+  return availableBoxes.filter((box) => wouldWinAt(board, box.index, symbol) !== undefined);
+}
+
+/**
+ * Tic-tac-toe priority: win now, else block opponent's immediate win, else use AI.
+ * Returns undefined when no forced tactical move exists.
+ */
+export function selectForcedMove(
+  board: BoardState,
+  availableBoxes: readonly CellPosition[],
+  aiSymbol: PlayerSymbol,
+  humanSymbol: PlayerSymbol
+): { position: CellPosition; reason: 'immediate_win' | 'critical_block' } | undefined {
+  const aiWins = findImmediateWinMoves(board, aiSymbol, availableBoxes);
+  if (aiWins.length > 0) {
+    return { position: aiWins[0]!, reason: 'immediate_win' };
+  }
+
+  const blocks = findImmediateWinMoves(board, humanSymbol, availableBoxes);
+  if (blocks.length > 0) {
+    return { position: blocks[0]!, reason: 'critical_block' };
   }
 
   return undefined;
