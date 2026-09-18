@@ -8,35 +8,52 @@ const MIME_TYPES: Record<string, string> = {
   '.js': 'application/javascript; charset=utf-8',
 };
 
+async function serveFileIfExists(
+  filePath: string,
+  contentType: string,
+  cacheControl?: string
+): Promise<Response | null> {
+  const file = Bun.file(filePath);
+  if (!(await file.exists())) return null;
+
+  const headers: Record<string, string> = { 'Content-Type': contentType };
+  if (cacheControl) headers['Cache-Control'] = cacheControl;
+
+  return new Response(file, { headers });
+}
+
 export async function serveStaticFile(pathname: string): Promise<Response | null> {
   if (pathname === '/' || pathname === '/index.html') {
-    return new Response(Bun.file(join(ROOT_DIR, 'index.html')), {
-      headers: { 'Content-Type': MIME_TYPES['.html'] },
-    });
+    const built = await serveFileIfExists(
+      join(ROOT_DIR, 'public', 'index.html'),
+      MIME_TYPES['.html']
+    );
+    if (built) return built;
+
+    return serveFileIfExists(join(ROOT_DIR, 'index.html'), MIME_TYPES['.html']);
   }
 
   if (pathname === '/styles.css' || pathname === '/public/styles.css') {
-    return new Response(Bun.file(join(ROOT_DIR, 'public', 'styles.css')), {
-      headers: { 'Content-Type': MIME_TYPES['.css'] },
-    });
+    return serveFileIfExists(join(ROOT_DIR, 'public', 'styles.css'), MIME_TYPES['.css']);
   }
 
   if (pathname === '/bundle.js') {
-    const bundlePath = join(ROOT_DIR, 'dist', 'bundle.js');
-    const bundle = Bun.file(bundlePath);
-    if (await bundle.exists()) {
-      return new Response(bundle, {
-        headers: { 'Content-Type': MIME_TYPES['.js'] },
-      });
-    }
+    const built = await serveFileIfExists(
+      join(ROOT_DIR, 'public', 'bundle.js'),
+      MIME_TYPES['.js'],
+      'public, max-age=31536000, immutable'
+    );
+    if (built) return built;
+
+    return serveFileIfExists(
+      join(ROOT_DIR, 'dist', 'bundle.js'),
+      MIME_TYPES['.js'],
+      'public, max-age=31536000, immutable'
+    );
   }
 
-  const localPath = join(ROOT_DIR, pathname);
-  const file = Bun.file(localPath);
-  if (await file.exists()) {
-    const extension = pathname.slice(pathname.lastIndexOf('.'));
-    const contentType = MIME_TYPES[extension];
-    return new Response(file, contentType ? { headers: { 'Content-Type': contentType } } : undefined);
+  if (pathname.startsWith('/public/')) {
+    return serveFileIfExists(join(ROOT_DIR, pathname), MIME_TYPES['.css'] ?? 'application/octet-stream');
   }
 
   return null;

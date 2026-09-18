@@ -1,0 +1,36 @@
+# Dependencies & build artifacts (rebuilt in the image)
+node_modules
+dist
+public/index.html
+public/bundle.js
+
+# Git & IDE
+.git
+.gitignore
+.vscode
+.idea
+
+# Secrets (provided at runtime via env_file)
+.env
+.env.*
+!.env.example
+
+# Local tool caches
+.agents
+.aider-desk
+.claude
+skills-lock.json
+
+# Vercel-only deploy files
+api
+vercel.json
+
+# Tests & docs (not needed in runtime image)
+**/*.test.ts
+coverage
+README.md
+
+# Docker meta (not needed inside image)
+Dockerfile
+docker-compose.yml
+.dockerignore

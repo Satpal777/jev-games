@@ -9,6 +9,28 @@ A Tic-Tac-Toe web game built with HTML, CSS, TypeScript, and Bun. The default AI
 - `bun run build` - Prepare static assets in `public/` (for Vercel)
 - `bun run build:local` - Build browser bundle to `dist/bundle.js` (for local dev)
 
+## Deploy with Docker
+
+1. Copy env file and set your API key:
+   ```bash
+   cp .env.example .env
+   # Edit .env and set TYPESAFE_API_KEY
+   ```
+
+2. Build and start:
+   ```bash
+   docker compose up --build -d
+   ```
+
+3. Open `http://localhost:3000` (or the host port from `.env`).
+
+Useful commands:
+- `docker compose logs -f app` — follow logs
+- `docker compose down` — stop and remove containers
+- `docker compose up --build` — rebuild after code changes
+
+The image runs `bun run server.ts`, serves pre-built assets from `public/`, and exposes `/api/status` + `/api/ai-move`.
+
 ## Deploy on Vercel
 
 1. Push this repo to GitHub (already connected to Vercel).

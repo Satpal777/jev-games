@@ -18,15 +18,14 @@ const server = serve({
       return handleAIMoveRequest(req);
     }
 
-    if (pathname === '/bundle.js') {
-      return serveBundle();
-    }
-
     const staticResponse = await serveStaticFile(pathname);
     if (staticResponse) {
       return staticResponse;
     }
 
+    if (pathname === '/bundle.js') {
+      return serveBundle();
+    }
     return new Response('404 Not Found', { status: 404 });
   },
 });
