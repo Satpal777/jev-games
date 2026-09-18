@@ -83,7 +83,7 @@ Set `TYPESAFE_API_KEY` in the environment or paste a key in the UI to enable Jev
 
 - `src/game.ts` - game rules and turn flow
 - `src/ai.ts` - default TypeSafe client wrapper and random fallback
-- `src/typesafe-decision.ts` - Jev payload builder and server-side evaluator
+- `lib/typesafe-decision.ts` - Jev payload builder and server-side evaluator
 - `server/api.ts` - `/api/status` and `/api/ai-move`
 - `server/bundle.ts` - cached browser bundle for `/bundle.js`
 - `server/static.ts` - HTML/CSS/static assets

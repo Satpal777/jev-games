@@ -1,6 +1,6 @@
 import { choice, TypeSafeClient } from '@typesafe-ai/sdk';
-import { wouldWinAt } from './board-utils';
-import type { BoardState, CellPosition, DecisionDetails, PlayerSymbol } from './types';
+import { wouldWinAt } from '../src/board-utils';
+import type { BoardState, CellPosition, DecisionDetails, PlayerSymbol } from '../src/types';
 
 function renderAsciiBoard(board: BoardState): string {
   const symbol = (value: PlayerSymbol | null | undefined): string => value ?? '.';
