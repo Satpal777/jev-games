@@ -2,7 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "bun install",
   "buildCommand": "bun run build",
-  "rewrites": [
-    { "source": "/bundle.js", "destination": "/dist/bundle.js" }
-  ]
+  "outputDirectory": "public",
+  "framework": null
 }

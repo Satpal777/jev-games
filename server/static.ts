@@ -15,10 +15,20 @@ export async function serveStaticFile(pathname: string): Promise<Response | null
     });
   }
 
-  if (pathname === '/public/styles.css' || pathname === '/styles.css') {
+  if (pathname === '/styles.css' || pathname === '/public/styles.css') {
     return new Response(Bun.file(join(ROOT_DIR, 'public', 'styles.css')), {
       headers: { 'Content-Type': MIME_TYPES['.css'] },
     });
+  }
+
+  if (pathname === '/bundle.js') {
+    const bundlePath = join(ROOT_DIR, 'dist', 'bundle.js');
+    const bundle = Bun.file(bundlePath);
+    if (await bundle.exists()) {
+      return new Response(bundle, {
+        headers: { 'Content-Type': MIME_TYPES['.js'] },
+      });
+    }
   }
 
   const localPath = join(ROOT_DIR, pathname);

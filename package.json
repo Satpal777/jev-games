@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "bun run server.ts",
-    "build": "bun build src/main.ts --target=browser --outfile=dist/bundle.js --minify",
+    "build": "bun run scripts/prepare-vercel.ts",
+    "build:local": "bun build src/main.ts --target=browser --outfile=dist/bundle.js --minify",
     "test": "bun test",
     "start": "bun run server.ts"
   },
