@@ -18,11 +18,22 @@ A Tic-Tac-Toe web game built with HTML, CSS, TypeScript, and Bun. The default AI
    ```
 
 2. Build and start:
+
+   **Coolify / production** (no host port binding — the platform proxy routes to the container):
    ```bash
    docker compose up --build -d
    ```
 
-3. Open `http://localhost:3000` (or the host port from `.env`).
+   **Local machine** (maps host port 3000):
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.local.yml up --build -d
+   ```
+
+3. Open the app:
+   - **Coolify:** your assigned domain (e.g. `https://jev-game.example.com`)
+   - **Local:** `http://localhost:3000`
+
+   In Coolify, set **Port** to `3000` in the service settings and ensure `TYPESAFE_API_KEY` is in environment variables.
 
 Useful commands:
 - `docker compose logs -f app` — follow logs

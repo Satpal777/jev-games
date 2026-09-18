@@ -3,11 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: jev-game
-    ports:
-      - "${PORT:-3000}:3000"
-    env_file:
-      - .env
+    expose:
+      - "3000"
     environment:
       NODE_ENV: production
       PORT: 3000
